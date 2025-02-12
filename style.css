@@ -1,0 +1,90 @@
+/* 固定整個頁面尺寸 */
+html, body {
+    width: 360px;
+    height: 640px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #fff;
+  }
+  
+  /* 主要內容容器固定尺寸，超出部分可捲動 */
+  .container {
+    width: 360px;
+    height: 640px;
+    margin: 0 auto;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 10px;
+    font-family: sans-serif;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  /* 縣市按鈕樣式 */
+  .counties-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  /* 圓形圖片按鈕 */
+  .btn-county {
+    border: none;
+    border-radius: 50%;        /* 圓形 */
+    width: 120px;               /* 按鈕直徑 */
+    height: 120px;
+    background-size: cover;    /* 背景圖填滿 */
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    margin: 5px;
+  
+    /* 如果想顯示文字在圖片上，可調字體顏色、陰影 */
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 0 0 4px #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .btn-county:hover {
+    /* hover 效果 (可視需求調整) */
+    filter: brightness(0.9);
+  }
+  
+  /* 鄉鎮市區 checkbox 區 */
+  .township-container {
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+  
+  .township-container label {
+    display: inline-block;
+    width: 120px;
+    margin: 5px 0;
+  }
+  
+  /* 訂閱摘要區域固定高度，內部可捲動 */
+  #subscriptionSummary {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+  
+  button {
+    margin-top: 15px;
+    padding: 6px 12px;
+  }
+
+  button:hover {
+  background-color: #0056b3;
+ }
