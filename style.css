@@ -22,7 +22,7 @@ html, body {
   
   /* 確保底部留一點空間 */
   .container {
-    padding-bottom: 40px; 
+    padding-bottom: 20px; 
   }
 
   .hidden {
