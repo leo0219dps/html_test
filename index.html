@@ -59,7 +59,7 @@
       // 中部
       "臺中市": "images/Taichung_city.png",
       "苗栗縣": "images/Miaoli_country.png",
-      "彰化縣": "images/Changhua_country.jpg",
+      "彰化縣": "images/Changhua_country.png",
       "南投縣": "images/Nantou_country.png",
       "雲林縣": "images/Yunlin_country.png",
     
@@ -299,6 +299,17 @@
       });
     }
 
+    // "送出全部訂閱"按鈕 帶效果
+    function onCtaClick(event) {
+      const button = event.currentTarget; 
+      button.classList.add("active");
+      setTimeout(() => {
+        button.classList.remove("active");
+        // 動畫結束後才送出
+        submitAllSubscriptions();
+      }, 300);
+    }
+
     window.onload = async () => {
       await initLiff();
       await loadCountyData();
@@ -315,14 +326,32 @@
 
     <!-- 縣市選擇頁面 -->
     <div id="countyPage">
-      <p>
-        請點選您要訂閱的縣市：
+      <p>請點選您要訂閱的縣市：</p>
+
+      <div class="btn-row">
         <button type="button" onclick="subscribeAllCounties()">訂閱全部縣市</button>
         <button type="button" onclick="cancelAllSubscriptions()">取消全部訂閱</button>
-      </p>
+      </div>
+
       <div id="countyButtons" class="counties-container"></div>
+      
+      
       <!-- 送出全部訂閱按鈕 -->
-      <button type="button" onclick="submitAllSubscriptions()">送出全部訂閱</button>
+      <div class="btn-cta-container">
+        <button class="cta" onclick="onCtaClick(event)">
+          <span>送出全部訂閱</span>
+          <span class="shape">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+      </div>
     </div>
 
     <!-- 鄉鎮選擇頁面 -->
@@ -335,6 +364,13 @@
       <div id="townshipDiv" class="township-container"></div>
       <button type="button" onclick="backToCountyPage()">← 返回縣市選擇</button>
     </div>
+
+
+    <!-- 頁尾顯示 -->>
+    <div class="footer">
+      中保防災科技股份有限公司
+    </div>
+
   </div>
 </body>
 </html>
