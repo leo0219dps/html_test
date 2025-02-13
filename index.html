@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- 為手機瀏覽設定固定尺寸與正確縮放 -->
+  <meta name="viewport" content="width=400, height=640, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>地震訂閱</title>
+
+  <!-- 引入外部 CSS -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- 載入 LIFF SDK 2.x -->
+  <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+
+  <script>
+    // ★ 請替換成你的 LIFF ID
+    const LIFF_ID = "2006876654-GR6Odxn9";
+    // 範例縣市資料 (請根據實際需求補全)
+    const countyData = {
+      // 北部
+      "臺北市": ["松山區","信義區","大安區","中山區","中正區","大同區","萬華區","文山區","南港區","內湖區","士林區","北投區"],
+      "新北市": ["板橋區","三重區","中和區","永和區","新莊區","新店區","樹林區","鶯歌區","三峽區","淡水區","汐止區","瑞芳區","土城區","蘆洲區","五股區","泰山區","林口區","深坑區","石碇區","坪林區","三芝區","石門區","八里區","平溪區","雙溪區","貢寮區","金山區","萬里區","烏來區"],
+      "基隆市": ["中正區","七堵區","暖暖區","仁愛區","中山區","安樂區","信義區"],
+      "宜蘭縣": ["宜蘭市","羅東鎮","蘇澳鎮","頭城鎮","礁溪鄉","壯圍鄉","員山鄉","冬山鄉","五結鄉","三星鄉","大同鄉","南澳鄉"],
+      "桃園市": ["桃園區","中壢區","大溪區","楊梅區","蘆竹區","大園區","龜山區","八德區","龍潭區","平鎮區","新屋區","觀音區","復興區"],
+      "新竹市": ["東區","北區","香山區"],
+      "新竹縣": ["竹北市","竹東鎮","新埔鎮","關西鎮","湖口鄉","新豐鄉","芎林鄉","橫山鄉","北埔鄉","寶山鄉","峨眉鄉","尖石鄉","五峰鄉"],
+    
+      // 中部
+      "臺中市": ["中區","東區","南區","西區","北區","西屯區","南屯區","北屯區","豐原區","東勢區","大甲區","清水區","沙鹿區","梧棲區","后里區","神岡區","潭子區","大雅區","新社區","石岡區","外埔區","大安區","烏日區","大肚區","龍井區","霧峰區","太平區","大里區","和平區"],
+      "苗栗縣": ["苗栗市","苑裡鎮","通霄鎮","竹南鎮","頭份市","後龍鎮","卓蘭鎮","大湖鄉","公館鄉","銅鑼鄉","南庄鄉","頭屋鄉","三義鄉","西湖鄉","造橋鄉","三灣鄉","獅潭鄉","泰安鄉"],
+      "彰化縣": ["彰化市","鹿港鎮","和美鎮","線西鄉","伸港鄉","福興鄉","秀水鄉","花壇鄉","芬園鄉","員林市","溪湖鎮","田中鎮","大村鄉","埔鹽鄉","埔心鄉","永靖鄉","社頭鄉","二水鄉","北斗鎮","二林鎮","田尾鄉","埤頭鄉","芳苑鄉","大城鄉","竹塘鄉","溪州鄉"],
+      "南投縣": ["南投市","埔里鎮","草屯鎮","竹山鎮","集集鎮","名間鄉","鹿谷鄉","中寮鄉","魚池鄉","國姓鄉","水里鄉","信義鄉","仁愛鄉"],
+      "雲林縣": ["斗六市","斗南鎮","虎尾鎮","西螺鎮","土庫鎮","北港鎮","古坑鄉","大埤鎮","莿桐鄉","林內鄉","二崙鄉","崙背鄉","麥寮鄉","東勢鄉","褒忠鄉","臺西鄉","元長鄉","四湖鄉","口湖鄉","水林鄉"],
+    
+      // 南部
+      "高雄市": ["鹽埕區","鼓山區","左營區","楠梓區","三民區","新興區","前金區","苓雅區","前鎮區","旗津區","小港區","鳳山區","林園區","大寮區","大樹區","大社區","仁武區","鳥松區","岡山區","橋頭區","燕巢區","田寮區","阿蓮區","路竹區","湖內區","茄萣區","永安區","彌陀區","梓官區","旗山區","美濃區","六龜區","甲仙區","杉林區","內門區","茂林區","桃源區","那瑪夏區"],
+      "臺南市": ["新營區","鹽水區","白河區","柳營區","後壁區","東山區","麻豆區","下營區","六甲區","官田區","大內區","佳里區","學甲區","西港區","七股區","將軍區","北門區","新化區","善化區","新市區","安定區","山上區","玉井區","楠西區","南化區","左鎮區","仁德區","歸仁區","關廟區","龍崎區","永康區","東區","南區","北區","安南區","安平區","中西區"],
+      "嘉義市": ["東區","西區"],
+      "嘉義縣": ["太保市","朴子市","布袋鎮","大林鎮","民雄鄉","溪口鄉","新港鎮","六腳鄉","東石鄉","義竹鄉","鹿草鄉","水上鄉","中埔鄉","竹崎鄉","梅山鄉","番路鄉","大埔鄉","阿里山鄉"],
+      "屏東縣": ["屏東市","潮州鎮","東港鎮","恆春鎮","萬丹鄉","長治鄉","麟洛鄉","九如鄉","里港鄉","鹽埔鄉","高樹鄉","萬巒鄉","內埔鄉","竹田鄉","新埤鄉","枋寮鄉","新園鄉","崁頂鄉","林邊鄉","南州鄉","佳冬鄉","琉球鄉","車城鄉","滿州鄉","枋山鄉","三地門鄉","霧台鄉","瑪家鄉","泰武鄉","來義鄉","春日鄉","獅子鄉","牡丹鄉"],
+      "澎湖縣": ["馬公市","湖西鄉","白沙鄉","西嶼鄉","望安鄉","七美鄉"],
+    
+      // 東部
+      "花蓮縣": ["花蓮市","鳳林鎮","玉里鎮","新城鄉","吉安鄉","壽豐鄉","光復鄉","豐濱鄉","瑞穗鄉","富里鄉","秀林鄉","萬榮鄉","卓溪鄉"],
+      "臺東縣": ["臺東市","成功鎮","關山鎮","卑南鎮","鹿野鄉","池上鄉","東河鄉","長濱鄉","大麻里鄉","大武鄉","綠島鄉","海端鄉","延平鄉","金峰鄉","達仁鄉","蘭嶼鄉"]
+    };
+
+
+    // 新增 -> 圖片路徑對照表
+    const countryImages = {
+      "臺北市": "images/Taipei_city.png",
+      "新北市": "images/NewTaipei_city.png",
+      "基隆市": "images/Keelung_city.png",
+      "宜蘭縣": "images/Yilan_country.png",
+      "桃園市": "images/Taoyuan_city.png",
+      "新竹市": "images/Hsinchu_city.png",
+      "新竹縣": "images/Hsinchu_country.png",
+      // 中部
+      "臺中市": "images/Taichung_city.png",
+      "苗栗縣": "images/Miaoli_country.png",
+      "彰化縣": "images/Changhua_country.png",
+      "南投縣": "images/Nantou_country.png",
+      "雲林縣": "images/Yunlin_country.png",
+    
+      // 南部
+      "高雄市": "images/Kaohsiung_city.png",
+      "臺南市": "images/Tainan_city.png",
+      "嘉義市": "images/Chiayi_city.png",
+      "嘉義縣": "images/Chiayi_country.png",
+      "屏東縣": "images/Pingtung_country.png",
+      "澎湖縣": "images/Penghu_country.png",
+
+      // 東部
+      "花蓮縣": "images/Hualien_country.png",
+      "臺東縣": "images/Taitung_country.png"
+    }
+
+
+
+    // 區域排序：依北部、中部、南部、東部排序
+    const regionOrder = ["北部", "中部", "南部", "東部"];
+    const regionMapping = {
+      "北部": ["臺北市", "新北市", "基隆市", "宜蘭縣", "桃園市", "新竹市", "新竹縣"],
+      "中部": ["臺中市", "苗栗縣", "彰化縣", "南投縣", "雲林縣"],
+      "南部": ["高雄市", "臺南市", "嘉義市", "嘉義縣", "屏東縣", "澎湖縣"],
+      "東部": ["花蓮縣", "臺東縣"]
+    };
+
+    // 當前選取的縣市
+    let selectedCounty = null; 
+    // 儲存所有訂閱資料，每個縣市對應一個鄉鎮陣列
+    let subscriptions = {};
+    
+    // LIFF 初始化 (很重要! 一定要初始化才能用)
+    async function initLiff() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        console.log("LIFF 初始化成功");
+        if (!liff.isInClient()) {
+          alert("提醒：請在 LINE App 內使用此頁面，以取得完整功能。");
+        }
+      } catch (err) {
+        console.error("LIFF 初始化失敗：", err);
+        alert("LIFF 初始化失敗，請檢查配置。");
+      }
+    }
+
+    // 載入縣市資料，若有 API 可在此處替換；此處以靜態資料為例
+    async function loadCountyData() {
+      generateCountyButtons();
+    }
+
+    // 生成縣市按鈕列表（依 countyData 產生按鈕）
+    function generateCountyButtons() {
+      const container = document.getElementById("countyButtons");
+      container.innerHTML = "";
+
+      Object.keys(countyData).forEach(county => {
+        const btn = document.createElement("button");
+        // 圓形圖片按鈕
+        btn.className = "btn-county";
+        // 按鈕上顯示文字
+        btn.textContent = county;
+        
+        // 對應縣市圖片
+        const imgUrl = countryImages[county];
+        if (imgUrl) {
+          btn.style.backgroundImage = `url('${imgUrl}')`;
+        } else {
+          // 如果沒有對應圖片，就給預設
+          btn.style.backgroundColor = "#888";
+        }
+        
+        // 點擊切換到鄉鎮區頁面
+        btn.onclick = () => {
+          selectedCounty = county;
+          showTownshipPage();
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    // 顯示鄉鎮市區選擇頁面
+    function showTownshipPage() {
+      document.getElementById("countyPage").classList.add("hidden");
+      document.getElementById("townshipPage").classList.remove("hidden");
+      document.getElementById("selectedCounty").textContent = selectedCounty;
+      if (!subscriptions[selectedCounty]) {
+        subscriptions[selectedCounty] = [];
+      }
+      const townshipDiv = document.getElementById("townshipDiv");
+      townshipDiv.innerHTML = "";
+      const towns = countyData[selectedCounty];
+      if (!towns || towns.length === 0) {
+        townshipDiv.textContent = "暫無鄉鎮市區資料。";
+        return;
+      }
+      towns.forEach(town => {
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.name = "township";
+        checkbox.value = town;
+        // 若之前已選取，則預設勾選
+        checkbox.checked = subscriptions[selectedCounty].includes(town);
+        checkbox.onchange = updateSubscriptionForCounty;
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(" " + town));
+        townshipDiv.appendChild(label);
+        townshipDiv.appendChild(document.createElement("br"));
+      });
+    }
+
+    // 更新目前縣市的訂閱資料（根據 checkbox 狀態）
+    function updateSubscriptionForCounty() {
+      const checkboxes = document.querySelectorAll("#townshipDiv input[name='township']");
+      subscriptions[selectedCounty] = [];
+      checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+          subscriptions[selectedCounty].push(checkbox.value);
+        }
+      });
+      displaySelectedSubscriptions();
+    }
+
+    // 全部訂閱：勾選目前頁面所有鄉鎮
+    function selectAllTownships() {
+      const checkboxes = document.querySelectorAll("#townshipDiv input[name='township']");
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+      });
+      updateSubscriptionForCounty();
+    }
+
+    // 全部取消：取消目前頁面所有鄉鎮選取
+    function deselectAllTownships() {
+      const checkboxes = document.querySelectorAll("#townshipDiv input[name='township']");
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+      });
+      updateSubscriptionForCounty();
+    }
+
+    // 返回縣市頁面（更新當前縣市訂閱資料後）
+    function backToCountyPage() {
+      updateSubscriptionForCounty();
+      document.getElementById("townshipPage").classList.add("hidden");
+      document.getElementById("countyPage").classList.remove("hidden");
+      displaySelectedSubscriptions();
+    }
+
+    // 清除所有訂閱資料（取消全部訂閱）
+    function cancelAllSubscriptions() {
+      subscriptions = {};
+      displaySelectedSubscriptions();
+      // 若在鄉鎮頁面，也取消所有 checkbox 的勾選
+      const checkboxes = document.querySelectorAll("#townshipDiv input[name='township']");
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+      });
+    }
+
+    // 訂閱全部縣市：將所有縣市的所有鄉鎮訂閱
+    function subscribeAllCounties() {
+      Object.keys(countyData).forEach(county => {
+        subscriptions[county] = countyData[county].slice(); // 複製一份陣列
+      });
+      displaySelectedSubscriptions();
+    }
+
+    // 送出所有訂閱資料
+    // 串接後端修改的地方
+    async function submitAllSubscriptions() {
+      let userId;
+      try {
+        const profile = await liff.getProfile();
+        userId = profile.userId;
+      } catch (err) {
+        console.error("無法取得使用者資訊：", err);
+        alert("無法取得使用者資訊，請確保在 LINE App 內使用或已授權。");
+        return;
+      }
+      let hasData = false;
+      for (let county in subscriptions) {
+        if (subscriptions[county].length > 0) {
+          hasData = true;
+          break;
+        }
+      }
+      if (!hasData) {
+        alert("尚未選擇任何縣市或鄉鎮");
+        return;
+      }
+      try {
+        const resp = await fetch("https://fd8d-210-66-148-9.ngrok-free.app/subscribeAll", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: userId,
+            subscriptions: subscriptions
+          })
+        });
+        if (!resp.ok) {
+          throw new Error("後端回應非 200 OK");
+        }
+        const result = await resp.json();
+        if (result.success) {
+          alert("訂閱成功！");
+          if (liff.isInClient()) {
+            liff.closeWindow();
+          }
+        } else {
+          alert("訂閱失敗：" + (result.message || "不明錯誤"));
+        }
+      } catch (err) {
+        console.error("送出訂閱時發生錯誤：", err);
+        alert("系統忙碌中，請稍後再試。");
+      }
+    }
+
+    // 顯示已選的縣市與鄉鎮，依照北部、中部、南部、東部排序
+    function displaySelectedSubscriptions() {
+      const subDiv = document.getElementById("subscriptionSummary");
+      if (!subDiv) return;
+      subDiv.innerHTML = "";
+      regionOrder.forEach(region => {
+        const countiesInRegion = regionMapping[region].filter(county => subscriptions[county] && subscriptions[county].length > 0);
+        if (countiesInRegion.length > 0) {
+          const regionHeader = document.createElement("h3");
+          regionHeader.textContent = region;
+          subDiv.appendChild(regionHeader);
+          countiesInRegion.forEach(county => {
+            const p = document.createElement("p");
+            p.textContent = `${county}：${subscriptions[county].join("、")}`;
+            subDiv.appendChild(p);
+          });
+        }
+      });
+    }
+
+    // "送出全部訂閱"按鈕 帶效果
+    function onCtaClick(event) {
+      const button = event.currentTarget; 
+      button.classList.add("active");
+      setTimeout(() => {
+        button.classList.remove("active");
+        // 動畫結束後才送出
+        submitAllSubscriptions();
+      }, 300);
+    }
+
+    window.onload = async () => {
+      await initLiff();
+      await loadCountyData();
+      displaySelectedSubscriptions();
+    };
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="title-row">
+      <img src="images/dps_earthquake.png" alt="地震圖示" class="title-icon">
+      <h2>地震區域訂閱</h2>
+    </div>
+    
+    <p>已選取的訂閱區域:</p>
+    <!-- 顯示目前累積的訂閱資料（固定高度，內部可滾動） -->
+    <div id="subscriptionSummary"></div>
+
+    <!-- 縣市選擇頁面 -->
+    <div id="countyPage">
+      <p>請點選您要訂閱的縣市：</p>
+
+      <div class="btn-row">
+        <button type="button" onclick="subscribeAllCounties()">訂閱全部縣市</button>
+        <button type="button" onclick="cancelAllSubscriptions()">取消全部訂閱</button>
+      </div>
+
+      <div id="countyButtons" class="counties-container"></div>
+      
+      
+      <!-- 送出全部訂閱按鈕 -->
+      <div class="btn-cta-container">
+        <button class="cta" onclick="onCtaClick(event)">
+          <span>送出全部訂閱</span>
+          <span class="shape">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 鄉鎮選擇頁面 -->
+    <div id="townshipPage" class="hidden">
+      <p>您選擇的縣市：<strong id="selectedCounty"></strong></p>
+      <p>請勾選該縣市中的鄉鎮市區 (可多選)：</p>
+      <!-- 針對該縣市的操作：全部訂閱／全部取消 -->
+      <button type="button" onclick="selectAllTownships()">全部訂閱</button>
+      <button type="button" onclick="deselectAllTownships()">全部取消</button>
+      <div id="townshipDiv" class="township-container"></div>
+      <button type="button" onclick="backToCountyPage()">← 返回縣市選擇</button>
+    </div>
+
+
+    <!-- 頁尾顯示 -->
+    <div class="footer">
+      中保防災科技股份有限公司 www.dps.tw
+    </div>
+
+  </div>
+</body>
+</html>
