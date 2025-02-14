@@ -1,0 +1,313 @@
+/* 固定整個頁面尺寸 */
+html, body {
+  width: 380px;
+  height: 640px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+/* 主要內容容器固定尺寸，超出部分可捲動 */
+.container {
+  width: 380px;
+  height: 640px;
+  margin: 0 auto;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 10px;
+  font-family: sans-serif;
+  position: relative;
+  /* 底部留一點空間，避免最下面的東西被擋住 */
+  padding-bottom: 10px; 
+}
+
+/* 上方標題列: 放圖片 + 文字 */
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* 圖示和文字之間的距離 */
+  margin-bottom: 10px;
+}
+
+/* 圖示大小 80x80 */
+.title-icon {
+  width: 160px;
+  height: 150px;
+  object-fit: contain; /* 保持圖片比例 */
+}
+
+/* 調整說明文字大小 */
+.big-text {
+  font-size: 18px;
+}
+
+
+.hidden {
+  display: none;
+}
+
+/* 縣市按鈕容器 */
+.counties-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+  justify-content: center; /* 置中排列 */
+}
+
+/* 圓形圖片按鈕 */
+.btn-county {
+  border: none;
+  border-radius: 50%;        /* 圓形 */
+  width: 90px;               /* 按鈕直徑 */
+  height: 90px;
+  background-size: cover;    /* 背景圖填滿 */
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  margin: 5px;
+  /* 文字樣式 */
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 0 4px #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: background-color 0.2s ease; /* 點擊前後變化 */
+  font-size: 20px; /* 文字大小 */
+}
+
+/* 滑鼠移過去微微變暗 */
+.btn-county:hover {
+  filter: brightness(0.9);
+}
+
+/* 按下時，背景與圖片做半透明亮度，保留背景圖 */
+.btn-county:active {
+  background-color: rgba(116, 185, 255, 0.3);
+  background-blend-mode: lighten;
+}
+
+/* 「訂閱全部、取消全部」的按鈕區 */
+.btn-row {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.btn-row button {
+  margin: 0 5px;
+}
+
+/* 通用按鈕 */
+.btn-action {
+  font-size: 16px;       /* 調整文字大小 */
+  padding: 8px 16px;     /* 調整按鈕內距 */
+  background-color: #4caf50; /* 可根據需求調整顏色 */
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  margin: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-action:hover {
+  background-color: #45a049;
+}
+
+.btn-back {
+  font-size: 16px;                /* 調整文字大小 */
+  padding: 8px 16px;              /* 調整按鈕內距 */
+  background-color: #387cc5;      /* 可根據需求調整顏色 */
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  margin: 20px 0 30px 0;  /* 上間距20px 下間距30px */
+  text-align: left;
+  display: block;
+  width: fit-content;
+  transition: background-color 0.2s ease;
+}
+
+.btn-back:hover {
+  background-color: #387cc5;
+}
+
+
+/* 一般按鈕樣式 */
+button {
+  margin-top: 15px;
+  padding: 6px 12px;
+  background-color: #3a94e9de;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #387cc5;
+}
+
+
+/* 鄉鎮市區 checkbox 區 三欄排列 */
+.township-container {
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.township-container label {
+  font-size: 18px;
+  display: inline-block;
+  width: 33%;
+  box-sizing: border-box;
+  margin: 5px 0;
+}
+
+/* 已選擇訂閱區 */
+#subscriptionSummary {
+  margin: 0 auto;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+/* 送出全部訂閱 -> Fancy Button (帶動畫) */
+.btn-cta-container {
+  text-align: center; 
+  margin-top: 20px;
+  /* 在這邊加入 margin-bottom 可以和 footer 分開一些 */
+  margin-bottom: 10px; /* ★ 距離 footer 多留10px */
+}
+
+/* 按鈕本體 */
+.cta {
+  width: 160px;
+  height: 60px;
+  background: #d3223ae5;
+  cursor: pointer;
+  border-radius: 25px;
+  border: none; 
+  position: relative;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+/* 文字 */
+.cta > span:first-of-type {
+  font-size: 18px;
+  position: relative;
+  z-index: 2;
+}
+
+/* shape 容器 */
+.cta .shape {
+  height: 60px;
+  width: 160px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* shape 內的 8 個小 span */
+.cta .shape span {
+  content: "";
+  position: absolute;
+  margin: auto;
+  height: 8px;
+  width: 2px;
+  background: #E6203B;
+  opacity: 0;
+}
+
+/* 這裡定義8個span各自的位置 (略) */
+.cta .shape span:nth-of-type(1) { top: -20px; left: 0; right: 0; }
+.cta .shape span:nth-of-type(2) { bottom: -20px; left: 0; right: 0; }
+.cta .shape span:nth-of-type(3) { top: 0; bottom: 0; left: -10px; }
+.cta .shape span:nth-of-type(4) { top: 0; bottom: 0; right: -10px; }
+.cta .shape span:nth-of-type(5) { top: -20px; left: -70%; right: 0; transform: rotate(-30deg); }
+.cta .shape span:nth-of-type(6) { top: -20px; left: 0; right: -70%; transform: rotate(30deg); }
+.cta .shape span:nth-of-type(7) { bottom: -20px; right: 0; left: -70%; transform: rotate(30deg); }
+.cta .shape span:nth-of-type(8) { bottom: -20px; left: 0; right: -70%; transform: rotate(-30deg); }
+
+/* 點擊 -> 加 .active -> bounce 動畫 */
+@keyframes bounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+.cta.active {
+  animation: bounce 0.1s ease-out 1;
+}
+.cta.active .shape span:nth-of-type(1) { animation: anim1 0.3s ease-out 1; }
+.cta.active .shape span:nth-of-type(2) { animation: anim2 0.3s ease-out 1; }
+.cta.active .shape span:nth-of-type(3) { animation: anim3 0.3s ease-out 1; }
+.cta.active .shape span:nth-of-type(4) { animation: anim4 0.3s ease-out 1; }
+.cta.active .shape span:nth-of-type(5) { animation: anim5 0.3s ease-out 1; }
+.cta.active .shape span:nth-of-type(6) { animation: anim6 0.3s ease-out 1; }
+.cta.active .shape span:nth-of-type(7) { animation: anim7 0.3s ease-out 1; }
+.cta.active .shape span:nth-of-type(8) { animation: anim8 0.3s ease-out 1; }
+
+/* 8 個噴射線動畫 */
+@keyframes anim1 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(0, -20px) scale(0.5); opacity: 0; }
+}
+@keyframes anim2 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(0, 20px) scale(0.5); opacity: 0; }
+}
+@keyframes anim3 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(-20px, 0) scale(0.5); opacity: 0; }
+}
+@keyframes anim4 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(20px, 0) scale(0.5); opacity: 0; }
+}
+@keyframes anim5 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(-20px, -20px) scale(0.5); opacity: 0; }
+}
+@keyframes anim6 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(20px, -20px) scale(0.5); opacity: 0; }
+}
+@keyframes anim7 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(-20px, 20px) scale(0.5); opacity: 0; }
+}
+@keyframes anim8 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(20px, 20px) scale(0.5); opacity: 0; }
+}
+
+
+
+/* 頁尾 */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  /* 預設 bottom: 5px; 但我們希望和按鈕再多隔一點，就給 margin-top 10px */
+  margin-top: 50px; 
+  margin-bottom: 5px;
+}
+
+.footer img {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
