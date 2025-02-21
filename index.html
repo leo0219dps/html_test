@@ -251,6 +251,7 @@
         return;
       }
       try {
+        // "http://<server_ip>:3000/subscribeAll"
         const resp = await fetch("https://596c-210-66-148-9.ngrok-free.app/subscribeAll", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
