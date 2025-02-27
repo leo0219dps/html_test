@@ -124,7 +124,7 @@
           }
           const data = await resp.json();
           if (data.success) {
-             subscriptions = data.subscribeAllCounties || {};
+             subscriptions = data.subscriptions  || {};
 
              if (data.minIntensity) {
               document.getElementById("intensitySelect").value = data.minIntensity;
@@ -142,7 +142,7 @@
       window.onload = async () => {
         await initLiff();
         await loadCountyData();
-        displaySelectedSubscriptions();
+        await loadExistingSub();
       };
 
       // 生成縣市按鈕列表
