@@ -129,7 +129,6 @@
              if (data.minIntensity) {
               document.getElementById("intensitySelect").value = data.minIntensity;
              }
-
              // 顯示畫面
              displaySelectedSubscriptions();
           } else {
@@ -302,6 +301,7 @@
           alert("無法取得使用者資訊，請確保在 LINE App 內使用或已授權。");
           return;
         }
+        /*
         let hasData = false;
         for (let county in subscriptions) {
           if (subscriptions[county].length > 0) {
@@ -312,7 +312,7 @@
         if (!hasData) {
           alert("尚未選擇任何縣市或鄉鎮");
           return;
-        }
+        }*/
 
         const minIntensity = document.getElementById("intensitySelect").value || "4級";
 
