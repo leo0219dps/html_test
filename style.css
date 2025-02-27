@@ -90,6 +90,13 @@ html, body {
   background-blend-mode: lighten;
 }
 
+
+#intensitySelect {
+  font-size: 18px;
+  padding: 4px;
+  margin-left: 10px;
+}
+
 /* 「訂閱全部、取消全部」的按鈕區 */
 .btn-row {
   margin: 10px 0;
