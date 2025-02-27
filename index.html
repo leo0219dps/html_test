@@ -123,6 +123,9 @@
             throw new Error("Server error");
           }
           const data = await resp.json();
+          
+          console.log("取得訂閱資料:", data);
+          
           if (data.success) {
              subscriptions = data.subscriptions  || {};
 
