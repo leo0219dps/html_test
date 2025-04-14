@@ -13,6 +13,11 @@
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 
     <script>
+
+      //const DEBUG_USER_ID = "Ue2bcb6cf74defafeca4c29d34009b32e";
+      const DEBUG_USER_ID = "test";
+      const USE_DEBUG_ID = true;
+
       // ★ 請替換成你的 LIFF ID
       const LIFF_ID = "2006876654-e3PpO1Wm";
       // 縣市資料
@@ -87,18 +92,20 @@
         "東部": ["花蓮縣", "臺東縣"]
       };
 
-      // 當前選取的縣市
-      let selectedCounty = null; 
       // 儲存所有訂閱資料，每個縣市對應一個鄉鎮陣列
       let subscriptions = {};
-      
+      // 當前選取的縣市
+      let selectedCounty = null; 
+
       // LIFF 初始化 (很重要! 一定要初始化才能用)
       async function initLiff() {
+        console.log("【initLiff】Start init...")
         try {
           await liff.init({ liffId: LIFF_ID });
-          console.log("LIFF 初始化成功");
+          console.log("【initLiff】LIFF 初始化成功");
           if (!liff.isInClient()) {
-            alert("提醒：請在 LINE App 內使用此頁面，以取得完整功能。");
+            console.log("【initLiff】不在Line APP操作")
+            //alert("提醒：請在 LINE App 內使用此頁面，以取得完整功能。");
           }
         } catch (err) {
           console.error("LIFF 初始化失敗：", err);
@@ -108,37 +115,73 @@
 
       // 載入縣市資料，靜態資料
       async function loadCountyData() {
+        console.log("【loadCountyData】產生縣市按鈕");
         generateCountyButtons();
       }
 
       // 撈userId 歷史資料
       async function  loadExistingSub() {
-        try {
-          const profile = await liff.getProfile();
-          const userId = profile.userId;
+        console.log("===== loadExistingSub() called =====");
+        let userId;
 
-          // 呼叫後端: /getSubscription
-          const resp = await fetch(`https://596c-210-66-148-9.ngrok-free.app/getSubscription?userId=${Ue2bcb6cf74defafeca4c29d34009b32e}`);
+        if(USE_DEBUG_ID) {
+          userId = DEBUG_USER_ID;
+          //console.log(`【loadExistingSub】使用debug userId=${userId}`);
+        } else {
+          try {
+            const profile = await liff.getProfile();
+            userId = profile.userId;
+            //console.log(`[loadExistingSub] 取得真實 userId=${userId}`);
+          } catch (err) {
+            //console.error("[loadExistingSub] 無法取得使用者資訊:", err);
+            console.error("[loadExistingSub] 無法取得使用者資訊")
+            alert("無法取得使用者資訊，請確保在LINE APP內使用或已授權。");
+            return;
+          }
+        }
+
+        //const url = (`https://847a-210-66-148-9.ngrok-free.app/getSubscriptions?userId=${userId}`);
+        const url = `/getSubscriptions?userId=${userId}`;
+        //console.log(`[loadExistingSub] Fetch GET -> ${url}`);
+        
+        try {
+          //const profile = await liff.getProfile();
+          //const userId = profile.userId;
+
+          // 呼叫後端: /getSubscriptions
+          //const resp = await fetch("https://847a-210-66-148-9.ngrok-free.app/getSubscriptions?userId=${userId}");
+          
+          const resp = await fetch(url);
+          console.log("[loadExistingSub] 後端回傳 status=", resp.status);
+
+
+          //const text = await resp.text();
+          //console.log("後端實際回傳:", text);
+
+
           if (!resp.ok) {
             throw new Error("Server error");
           }
           const data = await resp.json();
-          
-          console.log("取得訂閱資料:", data);
+          //console.log("[loadExistingSub] 後端回傳 data =", data);
+
           
           if (data.success) {
              subscriptions = data.subscriptions  || {};
+             //console.log("[loadExistingSub] subscriptions 更新後 =", subscriptions);
 
              if (data.minIntensity) {
               document.getElementById("intensitySelect").value = data.minIntensity;
-             }
+              //console.log("[loadExistingSub] 設定 intensitySelect =", data.minIntensity);
+            }
              // 顯示畫面
              displaySelectedSubscriptions();
           } else {
-            console.log("後端回傳 success=false:", data);
+            //console.log("後端回傳 success=false:", data);
           }
         } catch (err) {
-          console.error("載入訂閱資料失敗:", err)
+          //console.log("載入訂閱資料失敗:", err)
+          console.log("載入訂閱資料失敗")
         }
       }
 
@@ -315,13 +358,15 @@
         if (!hasData) {
           alert("尚未選擇任何縣市或鄉鎮");
           return;
-        }*/
+        }
+          */
 
         const minIntensity = document.getElementById("intensitySelect").value || "4級";
 
         try {
           // "http://<server_ip>:3000/subscribeAll"
-          const resp = await fetch("https://596c-210-66-148-9.ngrok-free.app/subscribeAll", {
+          //const resp = await fetch("https://847a-210-66-148-9.ngrok-free.app/subscribeAll", {
+            const resp = await fetch("/subscribeAll", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -343,8 +388,8 @@
             alert("訂閱失敗：" + (result.message || "不明錯誤"));
           }
         } catch (err) {
-          console.error("送出訂閱時發生錯誤：", err);
           alert("系統忙碌中，請稍後再試。");
+          console.error(err);
         }
       }
 
@@ -356,7 +401,7 @@
           button.classList.remove("active");
           // 動畫結束後才送出
           submitAllSubscriptions();
-        }, 400);
+        }, 300);
       }
     </script>
   </head>
@@ -406,15 +451,13 @@
         <div class="service-declaration">
           <p><strong>服務聲明:</strong></p>
           <p>
-            此官方帳號發布之地震速報訊息，引用自中央氣象署地震速報，惟可能因地震監測技術之限制、數據傳輸延遲或其他不可抗力因素，致預警資訊有誤差、延遲或誤報之情形。
+            １.此官方帳號發布之地震速報訊息，引用自中央氣象署地震速報，惟可能因地震監測技術之限制、數據傳輸延遲或其他不可抗力因素，致預警資訊有誤差、延遲或誤報之情形。
             <br>
-            使用者應自行判斷本系統所提供地震速報訊息之參考價值，並採取適當之應變措施。若使用者因本系統提供之地震預警訊息，致生任何直接或間接之損失或損害，本公司恕不負責。
+            ２.使用者應自行判斷本系統所提供地震速報訊息之參考價值，並採取適當之應變措施。若使用者因本系統提供之地震預警訊息，致生任何直接或間接之損失或損害，本公司恕不負責。
             <br>
-            地震發生時，請以中央氣象署所發布之正式地震報告為準。
+            ３.地震發生時，請以中央氣象署所發布之正式地震報告為準。
           </p>
         </div>
-        
-        
         
         <div class="btn-cta-container">
           <button class="cta" onclick="onCtaClick(event)">
@@ -447,20 +490,19 @@
         <div id="townshipDiv" class="township-container"></div>
         <!-- 返回按鈕移至上方，與下方送出按鈕間隔 30px -->
         <button type="button" class="btn-back" onclick="backToCountyPage()">← 返回縣市選擇</button>
-
+        
         <!-- 服務聲明 -->
         <div class="service-declaration">
-          <p><strong>服務聲明:</strong></p>          
+          <p><strong>服務聲明:</strong></p>
           <p>
-            此官方帳號發布之地震速報訊息，引用自中央氣象署地震速報，惟可能因地震監測技術之限制、數據傳輸延遲或其他不可抗力因素，致預警資訊有誤差、延遲或誤報之情形。
+            １.此官方帳號發布之地震速報訊息，引用自中央氣象署地震速報，惟可能因地震監測技術之限制、數據傳輸延遲或其他不可抗力因素，致預警資訊有誤差、延遲或誤報之情形。
             <br>
-            使用者應自行判斷本系統所提供地震速報訊息之參考價值，並採取適當之應變措施。若使用者因本系統提供之地震預警訊息，致生任何直接或間接之損失或損害，本公司恕不負責。
+            ２.使用者應自行判斷本系統所提供地震速報訊息之參考價值，並採取適當之應變措施。若使用者因本系統提供之地震預警訊息，致生任何直接或間接之損失或損害，本公司恕不負責。
             <br>
-            地震發生時，請以中央氣象署所發布之正式地震報告為準。
+            ３.地震發生時，請以中央氣象署所發布之正式地震報告為準。
           </p>
         </div>
 
-        
         <!-- 鄉鎮區底部增加送出按鈕-->
         <div class="btn-cta-container">
           <button class="cta" onclick="onCtaClick(event)">
